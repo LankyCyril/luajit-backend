@@ -1,0 +1,55 @@
+#!/bin/bash
+set -euo pipefail
+
+_bdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+_tool_dir=$(dirname -- "$_bdir")
+
+fail_umz () { echo >&2 && echo $1 >&2 && exit 1; }
+
+rebuild_backend () {
+    _oldpwd_rb="$PWD" && cd "$_bdir"
+    make -Bf makefile -j$1 \
+    | awk '{printf "%s %s %.0f%s", "Building backend (first run or forced",
+    "rebuild): approximately", NR*100/142, "% done\r" }' >&2 \
+    && (echo >&2; echo "Successfully built backend" >&2) \
+    || fail_umz "Could not build backend"
+    cd "$_oldpwd_rb" && unset _oldpwd_rb
+}
+
+build_backend () {
+    _oldpwd_bb="$PWD" && cd "$_bdir"
+    (! make -qf makefile >/dev/null 2>/dev/null) && rebuild_backend $1
+    cd "$_oldpwd_bb" && unset _oldpwd_bb
+}
+
+setup_environment () {
+    # interpreter:
+    export _luajit="$_bdir/luajit/src/luajit"
+    # project libraries:
+    _toollib="$_tool_dir/?.lua"
+    # external libraries:
+    _lualibs="$_bdir/lualibs/?.lua;$_bdir/lualibs/?/init.lua"
+    _lualibs_nested="$_bdir/lualibs/?/src/?.lua"
+    _lualibs_so="$_bdir/lualibs/?/build/?.so"
+    # Lua library paths:
+    export LUA_PATH="$_toollib;$_lualibs;$_lualibs_nested;;"
+    export LUA_CPATH="$_lualibs_so;${LUA_CPATH-''}"
+    # retained for fixins:
+    _local_so="$_bdir/sys/OpenBLAS:$_bdir/sys/zlib"
+    export LD_LIBRARY_PATH="$_local_so:${LD_LIBRARY_PATH-''}"
+    # cleanup:
+    unset _local_so _lualibs_nested _toollib _lualibs _lualibs_so
+}
+
+while getopts ':t:' _opt; do case "$_opt" in t) _jobs="$OPTARG" ;; esac done
+for _arg in "$@"; do if [ "$_arg" = "--rebuild-backend" ]; then
+    rebuild_backend ${_jobs-1}
+fi done
+build_backend ${_jobs-1} && setup_environment
+
+for _arg in "$@"; do if [ "$_arg" = "--repl" ]; then
+    [ $# -ne 2 ] && echo "Warning: --repl invoked, other arguments ignored" >&2
+    "$_luajit" && exit 0
+fi done
+
+"$_luajit" "$@"
