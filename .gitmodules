@@ -1,6 +1,6 @@
 [submodule "lualibs/kahlua"]
 	path = lualibs/kahlua
-	url = https://github.com/LankyCyril/kahlua
+	url = git@github.com:LankyCyril/kahlua.git
 [submodule "luajit"]
 	path = luajit
 	url = https://github.com/openresty/luajit2
