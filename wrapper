@@ -4,16 +4,17 @@ set -euo pipefail
 _bdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 _tool_dir=$(dirname -- "$_bdir")
 
-fail_umz () { echo >&2 && echo $1 >&2 && exit 1; }
+note_b () { echo -e "\033[0;33mLuaJIT-Backend: \033[0m$1" >&2; }
+fail_b () { echo -e "\033[0;31mLuaJIT-Backend: \033[0m$1" >&2; exit 1; }
 
 rebuild_backend () {
     _oldpwd_rb="$PWD" && cd "$_bdir"
-    echo "Building backend (first run or requested rebuild)" >&2
+    note_b "Either --rebuild-backend specified, or backend not initialized yet"
+    note_b "Will (re)build the backend after three seconds"
+    for _ in $(seq 1 12); do sleep .25; echo -n "."; done; echo "";
     make -Bf makefile -j$1 \
-    | awk '{printf "%s %s %.0f%s", "Building backend (first run or requested",
-    "rebuild): approximately", NR*100/142, "% done\r" }' >&2 \
-    && (echo >&2; echo "Successfully built backend" >&2) \
-    || fail_umz "Could not build backend"
+        && (note_b "Successfully built backend") \
+        || (fail_b "Could not build backend")
     cd "$_oldpwd_rb" && unset _oldpwd_rb
 }
 
