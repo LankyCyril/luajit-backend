@@ -8,8 +8,9 @@ fail_umz () { echo >&2 && echo $1 >&2 && exit 1; }
 
 rebuild_backend () {
     _oldpwd_rb="$PWD" && cd "$_bdir"
+    echo "Building backend (first run or requested rebuild)" >&2
     make -Bf makefile -j$1 \
-    | awk '{printf "%s %s %.0f%s", "Building backend (first run or forced",
+    | awk '{printf "%s %s %.0f%s", "Building backend (first run or requested",
     "rebuild): approximately", NR*100/142, "% done\r" }' >&2 \
     && (echo >&2; echo "Successfully built backend" >&2) \
     || fail_umz "Could not build backend"
