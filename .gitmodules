@@ -4,3 +4,9 @@
 [submodule "luajit"]
 	path = luajit
 	url = https://github.com/openresty/luajit2
+[submodule "lualibs/effil"]
+	path = lualibs/effil
+	url = https://github.com/effil/effil
+[submodule "lualibs/argparse"]
+	path = lualibs/argparse
+	url = https://github.com/luarocks/argparse
