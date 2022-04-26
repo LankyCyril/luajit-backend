@@ -16,6 +16,6 @@ lualibs/effil/build/effil.so: luajit/src/libluajit.so
 
 lualibs/ipc/ipc.so: luajit/src/libluajit.so
 	rm -f lualibs/ipc/ipc.so 2>/dev/null || :
-	sed -E -i 's/^#ifdef _WIN32/#ifdef _NOTAREALDEF/g' lualibs/ipc/ipc.c
+	sed -E -i 's/^#ifdef _WIN32/#ifndef _NOTAREALDEF/g' lualibs/ipc/ipc.c
 	git update-index --assume-unchanged lualibs/ipc 2>/dev/null || :
 	make -C lualibs/ipc LUA_INCDIR=../../luajit/src
