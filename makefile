@@ -1,4 +1,4 @@
-all: lualibs/effil/build/effil.so
+all: lualibs/effil/build/effil.so lualibs/ipc/ipc.so
 
 luajit/src/luajit luajit/src/libluajit.so:
 	$(MAKE) -C luajit
@@ -13,3 +13,9 @@ lualibs/effil/build/effil.so: luajit/src/libluajit.so
 		-DLUA_LIBRARY=$(PWD)/luajit/src/libluajit.so \
 		-DLUA_INCLUDE_DIR=$(PWD)/luajit/src
 	$(MAKE) -C lualibs/effil/build
+
+lualibs/ipc/ipc.so: luajit/src/libluajit.so
+	rm -f lualibs/ipc/ipc.so 2>/dev/null || :
+	sed -E -i 's/^#ifdef _WIN32/#ifdef _NOTAREALDEF/g' lualibs/ipc/ipc.c
+	git update-index --assume-unchanged lualibs/ipc 2>/dev/null || :
+	make -C lualibs/ipc LUA_INCDIR=../../luajit/src

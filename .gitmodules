@@ -10,3 +10,6 @@
 [submodule "lualibs/argparse"]
 	path = lualibs/argparse
 	url = https://github.com/luarocks/argparse
+[submodule "lualibs/ipc"]
+	path = lualibs/ipc
+	url = https://github.com/siffiejoe/lua-luaipc
