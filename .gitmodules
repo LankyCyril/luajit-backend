@@ -13,3 +13,6 @@
 [submodule "lualibs/ipc"]
 	path = lualibs/ipc
 	url = https://github.com/siffiejoe/lua-luaipc
+[submodule "lualibs/lua-mpi"]
+	path = lualibs/lua-mpi
+	url = https://github.com/jzrake/lua-mpi

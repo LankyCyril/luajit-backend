@@ -32,7 +32,7 @@ setup_environment () {
     # external libraries:
     _lualibs="$_bdir/lualibs/?.lua;$_bdir/lualibs/?/init.lua"
     _lualibs_nested="$_bdir/lualibs/?/src/?.lua"
-    _lualibs_so="$_bdir/lualibs/?/build/?.so;$_bdir/lualibs/?/?.so"
+    _lualibs_so="$_bdir/lualibs/?.so;$_bdir/lualibs/?/?.so;$_bdir/lualibs/?/build/?.so"
     # Lua library paths:
     export LUA_PATH="$_toollib;$_lualibs;$_lualibs_nested;;"
     export LUA_CPATH="$_lualibs_so;${LUA_CPATH-''}"
