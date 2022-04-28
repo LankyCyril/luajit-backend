@@ -12,9 +12,15 @@ rebuild_backend () {
     note_b "Either --rebuild-backend specified, or backend not initialized yet"
     note_b "Will (re)build the backend after three seconds"
     for _ in $(seq 1 12); do sleep .25; echo -n "."; done; echo "";
-    make -Bf makefile -j$1 \
-        && (note_b "Successfully built backend") \
-        || (fail_b "Could not build backend")
+    make -Bf makefile -j$1 all \
+        && (note_b "Successfully built main backend") \
+        || (fail_b "Could not build main backend")
+    if [ "${LUA_MPI-no}" = "yes" ]; then
+        note_b "lua-mpi support requested, building it next"
+        make -Bf makefile -j$1 mpi \
+            && (note_b "Successfully built backend") \
+            || (fail_b "Could not build backend")
+    fi
     cd "$_oldpwd_rb" && unset _oldpwd_rb
 }
 
